@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>📘 Print Price Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #f1f8ff);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 38px;
+      color: #0077b6;
+      margin-bottom: 40px;
+      font-weight: 700;
+    }
+
+    form {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .form-row label {
+      flex: 0 0 240px;
+      font-weight: bold;
+      font-size: 16px;
+      color: #333;
+      padding-right: 10px;
+    }
+
+    .required {
+      color: red;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+
+    .form-row input,
+    .form-row select {
+      flex: 1;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .form-row .error {
+      flex-basis: 100%;
+      margin-left: 250px;
+      font-size: 13px;
+      color: red;
+      margin-top: 4px;
+    }
+
+    button {
+      display: block;
+      margin: 30px auto 0;
+      padding: 12px 30px;
+      font-size: 17px;
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #005a8d;
+    }
+
+    .note {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    #result {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #28a745;
+    }
+
+    @media (max-width: 700px) {
+      .form-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .form-row label {
+        margin-bottom: 5px;
+      }
+
+      .form-row .error {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 Print Price Predictor</h1>
+
+  <form id="predictionForm">
+    <div class="form-row"><label>Quantity<span class="required">*</span></label><input type="number" name="quantity" /><div class="error"></div></div>
+    <div class="form-row"><label>Priority Level<span class="required">*</span></label><select name="priority_level"><option value="">--Select--</option><option>NORMAL</option><option>RUSH</option></select><div class="error"></div></div>
+    <div class="form-row"><label>Binding Type<span class="required">*</span></label><select name="binding_type"><option value="">--Select--</option><option>COILHARD-TAB</option><option>SADDLE-STITCH</option><option>PERF-CENTER</option></select><div class="error"></div></div>
+    <div class="form-row"><label>Shrinkwrap<span class="required">*</span></label><input type="number" name="shrinkwrap" min="0" max="1" /><div class="error"></div></div>
+    <div class="form-row"><label>Three Hole Drill<span class="required">*</span></label><input type="number" name="three_hole_drill" min="0" max="1" /><div class="error"></div></div>
+    <div class="form-row"><label>Perf<span class="required">*</span></label><input type="number" name="perf" min="0" max="1" /><div class="error"></div></div>
+    <div class="form-row"><label>Production Page<span class="required">*</span></label><input type="number" name="production_page" /><div class="error"></div></div>
+    <div class="form-row"><label>Thickness<span class="required">*</span></label><input type="number" name="thickness" step="0.01" /><div class="error"></div></div>
+    <div class="form-row"><label>Height<span class="required">*</span></label><input type="number" name="height" step="0.01" /><div class="error"></div></div>
+    <div class="form-row"><label>Width<span class="required">*</span></label><input type="number" name="width" step="0.01" /><div class="error"></div></div>
+    <div class="form-row"><label>Weight<span class="required">*</span></label><input type="number" name="weight" step="0.01" /><div class="error"></div></div>
+    <div class="form-row"><label>Text Paper Type<span class="required">*</span></label><select name="text_paper_type"><option value="">--Select--</option><option>FSC_MC_CVG_SilkHO_1.0_70</option><option>DEFAULT</option></select><div class="error"></div></div>
+    <div class="form-row"><label>Cover Finish Type<span class="required">*</span></label><select name="cover_finish_type"><option value="">--Select--</option><option>LAYFLAT-GLOSS</option><option>SOFTMATTE</option></select><div class="error"></div></div>
+    <div class="form-row"><label>Text Color<span class="required">*</span></label><select name="text_color"><option value="">--Select--</option><option>4/4</option><option>1/1</option></select><div class="error"></div></div>
+
+    <button type="submit">Predict Price</button>
+    <div class="note">* Required fields must be filled correctly</div>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    const form = document.getElementById("predictionForm");
+
+    form.addEventListener("input", (e) => {
+      const field = e.target;
+      if (field.type === "number" && field.value.startsWith("0") && field.value.length > 1) {
+        field.value = field.value.replace(/^0+/, "");
+      }
+    });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = {};
+      let isValid = true;
+
+      form.querySelectorAll(".error").forEach((err) => (err.textContent = ""));
+
+      formData.forEach((value, key) => {
+        const input = form.querySelector(`[name="${key}"]`);
+        const errorDiv = input.nextElementSibling;
+        let numValue = Number(value);
+
+        if (value === "") {
+          errorDiv.textContent = "This field cannot be empty";
+          isValid = false;
+        } else if (["quantity", "production_page"].includes(key) && !Number.isInteger(numValue)) {
+          errorDiv.textContent = "Must be a whole number";
+          isValid = false        } else if (["shrinkwrap", "three_hole_drill", "perf"].includes(key) && ![0, 1].includes(numValue)) {
+          errorDiv.textContent = "Must be 0 or 1";
+          isValid = false;
+        } else if (!isNaN(numValue) && numValue < 0) {
+          errorDiv.textContent = "Cannot be negative";
+          isValid = false;
+        }
+
+        data[key] = isNaN(numValue) ? value : numValue;
+      });
+
+      if (!isValid) return;
+
+      fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          document.getElementById("result").textContent = result.predicted_unit_price
+            ? `✅ Predicted Price: $${result.predicted_unit_price}`
+            : `❌ Error: ${result.error}`;
+        })
+        .catch((err) => {
+          document.getElementById("result").textContent = `❌ Server error: ${err}`;
+        });
+    });
+  </script>
+</body>
+</html>
